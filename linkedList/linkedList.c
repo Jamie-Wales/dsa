@@ -1,9 +1,9 @@
 #include "linkedList.h"
 
-void create(Queue * self, void * value) {
-    Node * head;
+void create(Queue *self, void *value) {
+    Node *head;
     head = malloc(sizeof(Node));
-    LinkedList * list;
+    LinkedList *list;
     list = malloc(sizeof(LinkedList));
 
     if (head == NULL || list == NULL) {
@@ -12,20 +12,16 @@ void create(Queue * self, void * value) {
     }
 
     head->value = value;
-
     self->list = list;
-
     self->list->head = head;
-
     self->list->tail = head;
-
     self->list->size = 1;
 }
 
-void destroy(Queue * self) {
-    Node * head = self->list->head;
+void destroy(Queue *self) {
+    Node *head = self->list->head;
     while (head != NULL) {
-        Node * prev = head;
+        Node *prev = head;
         head = head->next;
         free(prev);
     }
@@ -34,17 +30,17 @@ void destroy(Queue * self) {
     self->list = NULL;
 }
 
-void push(Queue * self, void * item) {
-    Node * node;
+void push(Queue *self, void *item) {
+    Node *node;
     node = malloc(sizeof(Node));
-    if (node == NULL){
+    if (node == NULL) {
         printf("Memory Allocation Failed!/n");
         exit(1);
     }
 
     node->value = item;
 
-    LinkedList * list = self->list;
+    LinkedList *list = self->list;
 
     if (list->tail == NULL) {
         list->tail = node;
@@ -56,46 +52,44 @@ void push(Queue * self, void * item) {
     list->size++;
 }
 
-void * pop(Queue * self) {
+void *pop(Queue *self) {
     if (self->list->size == 0) {
         return self;
     }
 
-    LinkedList * list = self->list;
-    Node * oldHead = list->head;
+    LinkedList *list = self->list;
+    Node *oldHead = list->head;
     list->head = list->head->next;
     list->size--;
-    void * value = oldHead->value;
+    void *value = oldHead->value;
     free(oldHead);
     return value;
 }
 
-void print(Queue * self, void * (outputStream)(void * object)) {
-    LinkedList * list = self->list;
-    Node * head = list->head;
+void print(Queue *self, void *(outputStream)(void *object)) {
+    LinkedList *list = self->list;
+    Node *head = list->head;
     while (head != NULL) {
         outputStream(head->value);
         head = head->next;
     }
 }
 
-
-int size(Queue * self) {
+int size(Queue *self) {
     return self->list->size;
 }
 
 QueueInterface interface = {
-        .create = create,  // populate all the fields
-        .destroy = destroy,
-        .push = push,
-        .pop = pop,
-        .print = print,
-        .size = size,  // Uncomment when you have implemented the function
+    .create = create,
+    .destroy = destroy,
+    .push = push,
+    .pop = pop,
+    .print = print,
+    .size = size,
 };
 
-
 void init(Queue *queue, Iterator *iterator) {
-    Node * node;
+    Node *node;
     node = queue->list->head;
 }
 
@@ -103,7 +97,7 @@ _Bool hasNext(Node *head) {
     return head->next != NULL;
 }
 
-void * current(Node *head) {
+void *current(Node *head) {
     return head->value;
 }
 
@@ -116,17 +110,9 @@ void next(Node *head) {
     }
 }
 
-
 IteratorInterface iteratorInterface = {
-        .init = init,
-        .hasNext = hasNext,
-        .current = current,
-        .next = next,
-
+    .init = init,
+    .hasNext = hasNext,
+    .current = current,
+    .next = next,
 };
-
-
-//
-// Created by jamie on 8/30/23.
-//
-
