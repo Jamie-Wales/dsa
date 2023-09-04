@@ -110,9 +110,14 @@ void next(Node *head) {
     }
 }
 
+void destroyIterator(Iterator * self) {
+    self->node = NULL;
+}
+
 IteratorInterface iteratorInterface = {
     .init = init,
     .hasNext = hasNext,
     .current = current,
     .next = next,
+    .destroyIterator = destroyIterator
 };

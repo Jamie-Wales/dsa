@@ -1,6 +1,5 @@
 #ifndef MYFIRSTC_LINKEDLIST_H
 #define MYFIRSTC_LINKEDLIST_H
-
 #include <malloc.h>
 #include <stdlib.h>
 
@@ -26,6 +25,7 @@ typedef struct {
     _Bool (*hasNext)(Node *head);
     void *(*current)(Node *head);
     void (*next)(Node *head);
+    void (*destroyIterator)(Iterator *self);
 } IteratorInterface;
 
 struct Iterator {
