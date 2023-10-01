@@ -1,7 +1,7 @@
 #ifndef MYFIRSTC_LINKEDLIST_H
 #define MYFIRSTC_LINKEDLIST_H
-#include <malloc.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct Node Node;
 
