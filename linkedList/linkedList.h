@@ -34,7 +34,7 @@ struct Iterator {
 };
 
 typedef struct {
-    void (*create)(Queue *self, void *value);
+    void (*create)(Queue *self, void *value, unsigned long size);
     void (*destroy)(Queue *self);
     void (*push)(Queue *self, void *item);
     void *(*pop)(Queue *self);
