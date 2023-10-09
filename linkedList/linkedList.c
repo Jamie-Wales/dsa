@@ -1,29 +1,21 @@
-#include <string.h>
 #include "linkedList.h"
 
-void create(Queue *self, void *value, unsigned long size) {
+typedef struct Node Node;
+
+struct Node {
+    void *value;
+    Node *next;
+};
+
+typedef struct LinkedList {
     Node *head;
-    head = malloc(sizeof(Node));
-    LinkedList *list;
-    list = malloc(sizeof(LinkedList));
-    void *item = malloc(sizeof(size));
-    memcpy(item, value, size);
+    Node *tail;
+    size_t size;
+} LinkedList;
 
-
-    if (head == NULL || list == NULL) {
-        printf("Memory Allocation Failed!\n");
-        exit(1);
-    }
-
-    head->value = item;
-    self->list = list;
-    self->list->head = head;
-    self->list->tail = head;
-    self->list->size = 1;
-}
 
 void destroy(Queue *self) {
-    Node *head = self->list->head;
+    Node *head = self->linkedList->head;
     while (head != NULL) {
         Node *prev = head;
         head = head->next;
@@ -32,8 +24,8 @@ void destroy(Queue *self) {
         prev = NULL;
     }
 
-    free(self->list);
-    self->list = NULL;
+    free(self->linkedList);
+    self->linkedList = NULL;
 }
 
 void push(Queue *self, void *item) {
@@ -47,7 +39,7 @@ void push(Queue *self, void *item) {
     node->value = item;
     node->next = NULL; // Important to initialize to NULL
 
-    LinkedList *list = self->list;
+    LinkedList *list = self->linkedList;
 
     if (list->head == NULL) {
         list->head = node;
@@ -61,11 +53,11 @@ void push(Queue *self, void *item) {
 }
 
 void *pop(Queue *self) {
-    if (self->list->size == 0) {
-        return self;
+    if (self->linkedList->size == 0) {
+        return NULL;
     }
 
-    LinkedList *list = self->list;
+    LinkedList *list = self->linkedList;
     Node *oldHead = list->head;
     list->head = list->head->next;
     list->size--;
@@ -75,8 +67,33 @@ void *pop(Queue *self) {
     return value;
 }
 
+void *deTail(Queue *self) {
+    if (self->linkedList->size == 0) {
+        return NULL;
+    }
+
+    LinkedList *list = self->linkedList;
+    Node *prev;
+    Node *head;
+
+    while(list->head->next != NULL) {
+        prev = list->head;
+        head = list->head->next;
+    }
+
+
+    prev->next = NULL;
+    self->linkedList->tail = prev;
+    list->size--;
+    void *value = head->next->value;
+    free(head);
+    return value;
+}
+
+
+
 void print(Queue *self, void *(outputStream)(void *object)) {
-    LinkedList *list = self->list;
+    LinkedList *list = self->linkedList;
     Node *head = list->head;
     while (head != NULL) {
         outputStream(head->value);
@@ -85,47 +102,79 @@ void print(Queue *self, void *(outputStream)(void *object)) {
 }
 
 int size(Queue *self) {
-    return self->list->size;
+    return self->linkedList->size;
 }
 
-QueueInterface interface = {
-    .create = create,
-    .destroy = destroy,
-    .push = push,
-    .pop = pop,
-    .print = print,
-    .size = size,
-};
-
-void init(Queue *queue, Iterator *iterator) {
-    iterator->node = queue->list->head;
+_Bool hasNext(Iterator *iterator) {
+    return iterator->linkedList->head->next != NULL;
 }
 
-_Bool hasNext(Node *head) {
-    return head->next != NULL;
-}
-
-void *current(Node *head) {
-    return head->value;
-}
-
-void next(Node *head) {
-    if (head->next != NULL) {
-        Node *prev = head;
-        head = head->next;
-        free(prev);
-        prev = NULL;
+void next(Iterator *self) {
+    if (hasNext(self)) {
+        self->linkedList->head = self->linkedList->head->next;
+        self->linkedList->head->value;
     }
 }
 
-void destroyIterator(Iterator * self) {
-    self->node = NULL;
+void *current(Iterator *self) {
+    return self->linkedList->head->value;
 }
 
+
+
+
 IteratorInterface iteratorInterface = {
-    .init = init,
-    .hasNext = hasNext,
-    .current = current,
-    .next = next,
-    .destroyIterator = destroyIterator
+        .hasNext = hasNext,
+        .next = next,
+        .current = current,
 };
+
+Iterator *createIterator(Queue *self) {
+    Iterator *itr = calloc(1, sizeof(Iterator));
+    *(itr->linkedList) = *(self->linkedList);
+    itr->interface = &iteratorInterface;
+    return itr;
+}
+
+QueueInterface interface = {
+        .destroy = destroy,
+        .push = push,
+        .pop = pop,
+        .print = print,
+        .size = size,
+        .createIterator = createIterator,
+        .deTail = deTail,
+};
+
+
+
+
+Queue createQueue(void *value, size_t size) {
+
+
+    Node *head;
+    head = malloc(sizeof(Node));
+    LinkedList *list;
+    list = malloc(sizeof(LinkedList));
+
+    if (head == NULL || list == NULL) {
+        printf("Memory Allocation Failed!\n");
+        exit(1);
+    }
+
+    head->value = calloc(1, sizeof(size));
+    memcpy(head->value, value, size);
+    list->head = head;
+    list->tail = head;
+    list->size = 1;
+
+
+    Queue queue = {
+            .queueInterface = &interface,
+            .linkedList = list,
+    };
+
+    return queue;
+
+}
+

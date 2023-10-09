@@ -1,50 +1,47 @@
 #ifndef MYFIRSTC_LINKEDLIST_H
 #define MYFIRSTC_LINKEDLIST_H
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-typedef struct Node Node;
+typedef struct LinkedList LinkedList;
+typedef struct QueueInterface QueueInterface;
 
-struct Node {
-    void *value;
-    Node *next;
-};
+typedef struct Queue {
+    QueueInterface *queueInterface;
+    LinkedList *linkedList;
+} Queue;
 
-typedef struct LinkedList {
-    Node *head;
-    Node *tail;
-    int size;
-} LinkedList;
+typedef struct IteratorInterface IteratorInterface;
 
-typedef struct Queue Queue;
-
-typedef struct Iterator Iterator;
-
-typedef struct {
-    void (*init)(Queue *queue, Iterator *self);
-    _Bool (*hasNext)(Node *head);
-    void *(*current)(Node *head);
-    void (*next)(Node *head);
-    void (*destroyIterator)(Iterator *self);
-} IteratorInterface;
-
-struct Iterator {
-    Node *node;
+typedef struct Iterator {
+    LinkedList *linkedList;
     IteratorInterface *interface;
+} Iterator;
+
+struct IteratorInterface {
+    _Bool (*hasNext)(Iterator *iterator);
+    void (*next)(Iterator *iterator);
+    void *(*current)(Iterator *iterator);
 };
 
-typedef struct {
-    void (*create)(Queue *self, void *value, unsigned long size);
+
+
+struct QueueInterface {
     void (*destroy)(Queue *self);
     void (*push)(Queue *self, void *item);
     void *(*pop)(Queue *self);
     void (*print)(Queue *self, void *(outputStream)(void *object));
     int (*size)(Queue *self);
-} QueueInterface;
+    Iterator *(*createIterator)(Queue *self);
+    void *(*deTail)(Queue *self);
 
-struct Queue {
-    QueueInterface *interface;
-    LinkedList *list;
+
 };
+
+
+Queue createQueue(void *value, size_t size);
+
 
 #endif
