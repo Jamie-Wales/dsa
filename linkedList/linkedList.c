@@ -76,7 +76,7 @@ void *deTail(Queue *self) {
     Node *prev;
     Node *head;
 
-    while(list->head->next != NULL) {
+    while (list->head->next != NULL) {
         prev = list->head;
         head = list->head->next;
     }
@@ -89,7 +89,6 @@ void *deTail(Queue *self) {
     free(head);
     return value;
 }
-
 
 
 void print(Queue *self, void *(outputStream)(void *object)) {
@@ -120,14 +119,18 @@ void *current(Iterator *self) {
     return self->linkedList->head->value;
 }
 
-
+void destroyIterator(Iterator *self) {
+    free(self);
+}
 
 
 IteratorInterface iteratorInterface = {
         .hasNext = hasNext,
         .next = next,
         .current = current,
+        .destroyIterator = destroyIterator,
 };
+
 
 Iterator *createIterator(Queue *self) {
     Iterator *itr = calloc(1, sizeof(Iterator));
@@ -145,8 +148,6 @@ QueueInterface interface = {
         .createIterator = createIterator,
         .deTail = deTail,
 };
-
-
 
 
 Queue createQueue(void *value, size_t size) {
