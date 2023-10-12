@@ -31,9 +31,11 @@ struct IteratorInterface {
 };
 
 struct QueueInterface {
+    void (*front)(Queue *self, void *item, size_t size);
+
     void (*destroy)(Queue *self);
 
-    void (*push)(Queue *self, void *item);
+    void (*push)(Queue *self, void *item, size_t size);
 
     void *(*pop)(Queue *self);
 
@@ -41,7 +43,7 @@ struct QueueInterface {
 
     int (*size)(Queue *self);
 
-    Iterator *(*createIterator)(Queue *self);
+    Iterator *(*createIterator)(Queue *self, size_t size);
 
     void *(*deTail)(Queue *self);
 };
