@@ -138,13 +138,11 @@ int size(Queue *self) {
 }
 
 _Bool hasNext(Iterator *iterator) {
-    return iterator->linkedList->head->next != NULL;
+    return iterator->linkedList->head != NULL;
 }
 
 void next(Iterator *self) {
-    if (hasNext(self)) {
         self->linkedList->head = self->linkedList->head->next;
-    }
 }
 
 void *current(Iterator *self) {
@@ -171,17 +169,21 @@ IteratorInterface iteratorInterface = {
 Iterator *createIterator(Queue *self, size_t size) {
     Iterator *itr = calloc(1, sizeof(Iterator));
 
-    // Deep copy linked list
+    // Creating a completely new LinkedList for the iterator
     itr->linkedList = calloc(1, sizeof(LinkedList));
+
     Node *current = self->linkedList->head;
     Node *itrCurrent = NULL;
 
     while (current != NULL) {
         Node *newNode = calloc(1, sizeof(Node));
 
-        newNode->value = malloc(sizeof(size));
-        memcpy(newNode->value, self->linkedList->head->value, size);
+        // Allocating a new chunk of memory to hold the value
+        newNode->value = calloc(1, size);
+        memcpy(newNode->value, current->value, size);
+
         newNode->next = NULL;
+
         if (itrCurrent == NULL) {
             itr->linkedList->head = newNode;
             itrCurrent = newNode;
@@ -190,7 +192,6 @@ Iterator *createIterator(Queue *self, size_t size) {
             itrCurrent = itrCurrent->next;
         }
 
-        itrCurrent->next = NULL;
         current = current->next;
     }
 
